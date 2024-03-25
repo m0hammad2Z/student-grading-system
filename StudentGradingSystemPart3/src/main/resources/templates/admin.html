@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <link href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css" rel="stylesheet">
+    <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">Admin</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="#">Welcome, <span th:text="${user.firstName}"></span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/logout">Logout</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Display success message -->
+<div th:if="${success}" class="alert alert-success" role="alert">
+    <p th:text="${success}"></p>
+</div>
+
+<!-- Display error message -->
+<div th:if="${error}" class="alert alert-danger" role="alert">
+    <p th:text="${error}"></p>
+</div>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-6" id="user-management">
+            <h2>User Management</h2>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#userModal">
+                Create User
+            </button>
+            <table id="user-table" class="table table-striped table-bordered" style="width:100%">
+                <thead>
+                <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="user : ${users}">
+                    <td th:text="${user.firstName}"></td>
+                    <td th:text="${user.lastName}"></td>
+                    <td th:text="${user.email}"></td>
+                    <td th:text="${user.role.name}" th:id="${user.role.id}"></td>
+                    <td>
+                        <a th:href="@{'/user/edit/' + ${user.id}}">Edit</a>
+                        <form method="post" th:action="@{'/user/delete/' + ${user.id}}">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <button type="submit">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-6" id="course-management">
+            <h2>Course Management</h2>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#courseModal">
+                Create Course
+            </button>
+
+            <table id="course-table" class="table table-striped table-bordered" style="width:100%">
+                <thead>
+                <tr>
+                    <th>Course Name</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="course : ${courses}">
+                        <td th:text="${course.name}"></td>
+                        <td>
+                            <a th:href="@{'/course/edit/' + ${course.id}}">Edit</a>
+                            <form method="post" th:action="@{'/course/delete/' + ${course.id}}">
+                                <input type="hidden" name="_method" value="DELETE">
+                                <button type="submit">Delete</button>
+                            </form>
+                            <a th:href="@{'/course/assign/' + ${course.id}}">Assign</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+<!-- Users Modal -->
+<div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-labelledby="userModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="userModalLabel">User Management</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post">
+                    <input type="hidden" id="U_method" name="_method" value="PUT">
+                    <div class="form-group">
+                        <label for="firstName">First Name</label>
+                        <input type="text" class="form-control" id="firstName" placeholder="Enter first name" name="firstName">
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name</label>
+                        <input type="text" class="form-control" id="lastName" placeholder="Enter last name" name="lastName">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" class="form-control" id="email" placeholder="Enter email" name="email">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" class="form-control" id="password" placeholder="Enter password" name="password">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="role">Role</label>
+                        <select class="form-control" id="role" name="role">
+                            <option th:each="role : ${roles}" th:value="${role.id}" th:text="${role.name}"></option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Courses Modal -->
+<div class="modal fade" id="courseModal" tabindex="-1" role="dialog" aria-labelledby="courseModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="courseModalLabel">Create/Update Course</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post">
+                    <input type="hidden" id="C_method" name="_method" value="PUT">
+                    <div class="form-group">
+                        <label for="courseName">Course Name</label>
+                        <input type="text" class="form-control" id="courseName" placeholder="Enter course name" name="name">
+                    </div>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Assign Course Modal -->
+<div class="modal fade" id="assignCourseModal" tabindex="-1" role="dialog" aria-labelledby="assignCourseModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="assignCourseModalLabel">Assign Course</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post">
+                    <div class="form-group">
+                        <label for="courseName">Course Name</label>
+                        <input type="text" class="form-control" id="ACourseName" placeholder="Enter course name" disabled name="name">
+                    </div>
+                    <div class="form-group">
+                        <label for="instructor">Instructor</label>
+                        <select class="form-control" id="instructor" name="instructorIds[]" multiple>
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Handle click event on the "Edit" button for the user
+    $(document).ready(function() {
+        $('a[href^="/user/edit/"]').click(function(e) {
+            e.preventDefault();
+
+            var userId = $(this).attr('href').split('/').pop();
+            var firstName = $(this).closest('tr').find('td:nth-child(1)').text();
+            var lastName = $(this).closest('tr').find('td:nth-child(2)').text();
+            var email = $(this).closest('tr').find('td:nth-child(3)').text();
+            var role = $(this).closest('tr').find('td:nth-child(4)').attr('id');
+
+
+            $('#userModal #firstName').val(firstName);
+            $('#userModal #lastName').val(lastName);
+            $('#userModal #email').val(email);
+            $('#userModal #role').val(role);
+            $('#userModal #U_method').val('PUT');
+
+            $('#userModal form').attr('action', 'user/edit/' + userId);
+
+
+            $('#userModal').modal('show');
+        });
+
+        // Handle click event on the "Create" button
+        $('.btn-primary[data-target="#userModal"]').click(function() {
+            // Clear all form fields
+            $('#userModal #firstName').val('');
+            $('#userModal #lastName').val('');
+            $('#userModal #email').val('');
+            $('#userModal #role').val('');
+            $('#userModal #U_method').val('');
+
+            $('#userModal form').attr('action', 'user/add');
+
+            $('#userModal').modal('show');
+        });
+    });
+
+    // Handle click event on the "Edit" button for the course
+    $(document).ready(function() {
+        $('a[href^="/course/edit/"]').click(function(e) {
+            e.preventDefault();
+
+            var courseId = $(this).attr('href').split('/').pop();
+            var courseName = $(this).closest('tr').find('td:nth-child(1)').text();
+
+            $('#courseModal #courseName').val(courseName);
+
+            $('#courseModal #C_method').val('PUT');
+
+            $('#courseModal form').attr('action', '/course/edit/' + courseId);
+
+            $('#courseModal').modal('show');
+        });
+
+        // Handle click event on the "Create" button
+        $('.btn-primary[data-target="#courseModal"]').click(function() {
+            // Clear all form fields
+            $('#courseModal #courseName').val('');
+            $('#courseModal #C_method').val('');
+
+            $('#courseModal form').attr('action', '/course/add');
+
+            $('#courseModal').modal('show');
+        });
+    });
+
+
+    // Handle click event on the "Assign" button for the course
+    $(document).ready(function() {
+        $('a[href^="/course/assign/"]').click(function(e) {
+            e.preventDefault();
+
+            var courseId = $(this).attr('href').split('/').pop();
+            var courseName = $(this).closest('tr').find('td:nth-child(1)').text();
+
+            //TODO: Get the instructors from the server and populate the select element
+
+            $('#assignCourseModal #ACourseName').val(courseName);
+
+            $('#assignCourseModal').modal('show');
+        });
+    });
+
+
+
+
+
+    // Initialize the DataTable
+    $(document).ready(function() {
+        $('#user-table').DataTable();
+        $('#course-table').DataTable();
+    });
+
+
+</script>
+
+<script>
+    $(document).ready(function() {
+    var allInstructors;
+    var courseInstructors;
+
+    // AJAX call to get all instructors
+    $.get('/user/instructors', function(data) {
+        allInstructors = data;
+    });
+
+
+
+    $('a[href^="/course/assign/"]').click(function(e) {
+        e.preventDefault();
+
+        $('#assignCourseModal #instructor').empty();
+
+        var courseId = $(this).attr('href').split('/').pop();
+        var courseName = $(this).closest('tr').find('td:nth-child(1)').text();
+
+        $('#assignCourseModal form').attr('action', '/course/assignInstructors/' + courseId);
+
+        $.get('/course/' + courseId + '/instructors', function(data) {
+            courseInstructors = data;
+
+            var courseInstructorIds = courseInstructors.map(function(instructor) {
+                return instructor.id;
+            });
+
+
+            allInstructors.forEach(function(instructor) {
+                var selected = courseInstructorIds.includes(instructor.id);
+                var option = $('<option></option>').attr('value', instructor.id).text(instructor.firstName + ' ' + instructor.lastName);
+                if (selected) {
+                    option.attr('selected', 'selected');
+                }
+                $('#assignCourseModal #instructor').append(option);
+            });
+        });
+
+        $('#assignCourseModal #ACourseName').val(courseName);
+
+        $('#assignCourseModal').modal('show');
+    });
+});
+
+</script>
+
+</body>
+
+</html>

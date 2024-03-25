@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Grading Page</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- Display success message -->
+<div th:if="${success}" class="alert alert-success" role="alert">
+    <p th:text="${success}"></p>
+</div>
+
+<!-- Display error message -->
+<div th:if="${error}" class="alert alert-danger" role="alert">
+    <p th:text="${error}"></p>
+</div>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">Admin</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="#">Welcome, <span th:text="${user.firstName}"></span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/logout">Logout</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+    <h1 th:text="${courseName}"></h1>
+    <h4 th:text="${assessmentName}"></h4>
+    <h5 th:text="${assessmentType}"></h5>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th scope="col">Student ID</th>
+            <th scope="col">Student Name</th>
+            <th scope="col">Grade</th>
+            <th scope="col">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="entry : ${grades}">
+            <td th:text="${entry.key.id}"></td>
+            <td th:text="${entry.key.firstName} + ' ' + ${entry.key.lastName}"></td>
+            <td th:text="${entry.value.grade}"></td>
+            <td>
+                <form th:action="@{'/grade/grading/' + ${entry.key.id} + '/' + ${assessmentId}}" method="post">
+                    <div class="form-group">
+                        <input type="number" class="form-control" placeholder="Enter grade" name="grade" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

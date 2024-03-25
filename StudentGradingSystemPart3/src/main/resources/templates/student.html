@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <link href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css" rel="stylesheet">
+    <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
+</head>
+<body>
+<!-- Display success message -->
+<div th:if="${success}" class="alert alert-success" role="alert">
+    <p th:text="${success}"></p>
+</div>
+
+<!-- Display error message -->
+<div th:if="${error}" class="alert alert-danger" role="alert">
+    <p th:text="${error}"></p>
+</div>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">Admin</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="#">Welcome, <span th:text="${user.firstName}"></span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/logout">Logout</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+    <h2>Student's Courses</h2>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Course ID</th>
+            <th scope="col">Course Name</th>
+            <th scope="col">Course Instructor</th>
+            <th scope="col">Average Grade</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="entry : ${averageGrades}">
+            <td th:text="${entry.key.course.id}"></td>
+            <td th:text="${entry.key.course.name}"></td>
+            <td th:text="${entry.key.instructor.firstName} + ' ' + ${entry.key.instructor.lastName}"></td>
+            <td th:text="${entry.value}"></td>
+        </tr>
+    </table>
+</div>
+
+    <div class="container">
+        <h2>Student's Assessments</h2>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Course ID</th>
+                <th>Course Name</th>
+                <th>Assessment ID</th>
+                <th>Assessment Name</th>
+                <th>Assessment Type</th>
+            </tr>
+            </thead>
+            <tbody  th:each="entry : ${averageGrades}">
+            <tr th:each="assessment : ${entry.key.course.assessments}">
+                <td th:text="${entry.key.course.id}"></td>
+                <td th:text="${entry.key.course.name}"></td>
+                <td th:text="${assessment.id}"></td>
+                <td th:text="${assessment.name}"></td>
+                <td th:text="${assessment.assessmentType}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+<div class="container">
+    <h2>Your Results</h2>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Course ID</th>
+            <th scope="col">Course Name</th>
+            <th scope="col">Assessment id</th>
+            <th scope="col">Assessment Name</th>
+            <th scope="col">Grade</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="grade : ${grades}">
+            <td th:text="${grade.assessment.course.id}"></td>
+            <td th:text="${grade.assessment.course.name}"></td>
+            <td th:text="${grade.assessment.id}"></td>
+            <td th:text="${grade.assessment.name}"></td>
+            <td th:text="${grade.grade}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('.table').DataTable();
+    });
+</script>
+
+
+</body>
+</html>
