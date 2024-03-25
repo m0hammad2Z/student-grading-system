@@ -38,3 +38,6 @@ The specific instructions for running the application will vary depending on the
 ## Conclusion
 
 This project demonstrates the implementation of a Student Grading System using various technologies and architectural approaches. It highlights the progression from basic command-line interaction to a full-fledged web application with security considerations and data access abstraction.
+
+## License
+MIT License [Link to MIT License](https://opensource.org/licenses/MIT)
